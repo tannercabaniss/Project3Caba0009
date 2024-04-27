@@ -10,7 +10,7 @@ shinyplots()
 Shiny app
 }
 \description{
-Calls Project 3 shiny app with descriptive plotting and widgets for MVR using RFR.
+Calls Project 3 shiny app with descriptive plotting and widgets for MV Classification using RFR.
 }
 \examples{
 \dontrun{ shinyplots()}

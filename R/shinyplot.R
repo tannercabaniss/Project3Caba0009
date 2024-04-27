@@ -1,6 +1,6 @@
 #' @title shinyplot
 #'
-#' @description Calls Project 3 shiny app with descriptive plotting and widgets for MVR using RFR.
+#' @description Calls Project 3 shiny app with descriptive plotting and widgets for MV Classification using RFR.
 #'
 #' @return  Shiny app
 #'
