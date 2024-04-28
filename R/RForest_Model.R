@@ -1,11 +1,13 @@
 #' Random Forest Model
 #'
+#' This function builds and trains a Random Forest classifier for the provided features using the provided parameters.
+#'
 #' @param data The name of the dataset to be analyzed.
 #' @param features The features to include in the analysis.
 #' @param scaling The scaling scheme to be applied to the data.
 #' @param parameters The parameters for the Random Forest model.
 #'
-#' @return a named list containing
+#' @return a named list containing heatmaps of the confusion matrices and relevant model evaluation metrics
 #' @export
 #'
 #' @importFrom stats predict
@@ -182,10 +184,11 @@ RForest_Model <- function(data, features, scaling, parameters) {
     ggplot2::theme_bw() + ggplot2::coord_equal() +
     ggplot2::theme(axis.text.x = ggplot2::element_blank()) +
     ggplot2::scale_fill_distiller(palette="Reds", direction=1) +
-    ggplot2::labs(title = "Training Data - Confusion Matrix", x = "Reference") +
+    ggplot2::labs(title = "Training Data - Confusion Matrix", x = "Actual") +
     ggplot2::geom_text(ggplot2::aes(label=Freq), color="black") +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-    ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0.5), "inches"))
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    ggplot2::theme(plot.margin = ggplot2::unit(c(0, 0, 1.45, 0), "inches"))
 
   Reference <- conf_matrix_test_df$Reference
   Prediction <- conf_matrix_test_df$Prediction
@@ -196,10 +199,11 @@ RForest_Model <- function(data, features, scaling, parameters) {
     ggplot2::theme_bw() + ggplot2::coord_equal() +
     ggplot2::theme(axis.text.x = ggplot2::element_blank()) +
     ggplot2::scale_fill_distiller(palette="Reds", direction=1) +
-    ggplot2::labs(title = "Testing Data - Confusion Matrix", x = "Reference") +
+    ggplot2::labs(title = "Testing Data - Confusion Matrix", x = "Actual") +
     ggplot2::geom_text(ggplot2::aes(label=Freq), color="black") +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
-    ggplot2::theme(plot.margin = ggplot2::unit(c(0.5, 0.5, 0.5, 0.5), "inches"))
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5),
+                   axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    ggplot2::theme(plot.margin = ggplot2::unit(c(0, 0, 1.45, 0), "inches"))
 
   # Generate formatted table of model metrics
   metrics_train_df <- conf_matrix_train$byClass[,c(1,2,3,4,5,6,7,11)]

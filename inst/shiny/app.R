@@ -10,7 +10,7 @@ ui <- page_navbar(
     card(
     selectInput("dropdown_dataset", "Select Dataset:",
                   choices = "Obesity Dataset", selected = "Obesity Dataset"),
-    "Select Features:",
+    "Select Features (Select at least 2):",
     checkboxInput("Gender",
                     "Gender of individual",
                     value = FALSE),
@@ -103,7 +103,7 @@ ui <- page_navbar(
   nav_panel(title = "Analyze Features",
             layout_columns(
               card(
-                "Select Features:",
+                "Select Features (Select at least 2):",
                 checkboxInput("Gender_inv",
                               "Gender of individual",
                               value = FALSE),
@@ -151,6 +151,9 @@ ui <- page_navbar(
                               value = FALSE),
                 checkboxInput("MTRANS_inv",
                               "Mode of transportion",
+                              value = FALSE),
+                checkboxInput("NObeyesdad_inv",
+                              "Obesity Classification (Target)",
                               value = FALSE)
                 ,
                 selectInput("dropdown_scaling_inv", "Select Scaling Method:",
@@ -159,11 +162,20 @@ ui <- page_navbar(
                 actionButton("start_model_inv", "Run Analysis")
               ),
               card(
-                card_header("Feature Analysis"),
-                plotOutput("train_heatmap"),
-                plotOutput("test_heatmap")
+                card_header("Feature Covariance and Correlation"),
+                plotOutput("cor_heatmap"),
+                plotOutput("cov_heatmap")
               ),
-              col_widths = c(2,10)
+              card(
+                card_header("Feature Summary Statistics"),
+                uiOutput("plot_placeholder"),
+                uiOutput("sum_placeholder")
+              ),
+              card(
+                card_header("PCA Analysis"),
+                uiOutput("PCA_anal")
+              ),
+              col_widths = c(2,4,3,3)
             )
   )
 )
@@ -218,12 +230,11 @@ server <- function(input, output, session) {
 
     output$train_heatmap <- renderPlot({
       model_results$Train_hmap  # Return the plot
-      print(model_results$Train_hmap)
-    }, height = 500, width = 500)
+    }, height = 500, width = 575)
 
     output$test_heatmap <- renderPlot({
       model_results$Test_hmap  # Return the plot
-    }, height = 500, width = 500)
+    }, height = 500, width = 575)
 
     output$train_metrics <- renderTable({
       model_results$Metrics_train
@@ -238,6 +249,68 @@ server <- function(input, output, session) {
 
     # Enable the start_model button again
     shinyjs::enable("start_model")
+  })
+
+  # Detect Start Model button to start the feature analysis with correct features and scaling.
+  observeEvent(input$start_model_inv, {
+
+    # Prevent the start_model button from being activated again
+    shinyjs::disable("start_model_inv")
+
+    # Convert features to list for output to function
+    featureList_inv <- c(input$Gender_inv, input$Age_inv, input$Height_inv, input$Weight_inv, input$family_history_with_overweight_inv,
+                     input$FAVC_inv,input$FCVC_inv, input$NCP_inv, input$CAEC_inv, input$SMOKE_inv, input$CH20_inv, input$SCC_inv, input$FAF_inv,
+                     input$TUE_inv, input$CALC_inv, input$MTRANS_inv, input$NObeyesdad_inv)
+
+    # Check to see if at least one feature has been selected
+    if(!any(featureList_inv)) {
+      warning("Please select at least one feature for analysis.")
+      session$reload()
+    }
+
+
+    scaling_inv <- input$dropdown_scaling_inv
+    feat_anal_results <- Feat_Anal(featureList_inv, scaling_inv)
+
+    output$cor_heatmap <- renderPlot({
+      feat_anal_results$Cor_HM  # Return the plot
+    }, height = 500, width = 500)
+
+    output$cov_heatmap <- renderPlot({
+      feat_anal_results$Cov_HM  # Return the plot
+    }, height = 500, width = 500)
+
+    output$plot_placeholder <- renderUI({
+      plot_output_list <- lapply(names(feat_anal_results$Feat_Plots), function(col_name) {
+        tagList(
+          h3(col_name),  # Display the column name as a heading
+          renderPlot({feat_anal_results$Feat_Plots[[col_name]]})
+        )
+      })
+      tagList(plot_output_list)
+    })
+
+
+    output$sum_placeholder <- renderUI({
+      summary_output_list <- lapply(names(feat_anal_results$Sum_List), function(col_name) {
+        tagList(
+          h3(col_name),  # Display the column name as a heading
+          renderPrint({feat_anal_results$Sum_List[[col_name]]})
+        )
+      })
+      tagList(summary_output_list)
+    })
+
+    output$PCA_anal <- renderUI({
+      verbatimTextOutput("pca_output")
+    })
+
+    output$pca_output <- renderPrint({
+      feat_anal_results$PCA
+    })
+
+    # Enable the start_model button again
+    shinyjs::enable("start_model_inv")
   })
 }
 

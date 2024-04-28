@@ -16,10 +16,10 @@ RForest_Model(data, features, scaling, parameters)
 \item{parameters}{The parameters for the Random Forest model.}
 }
 \value{
-a named list containing
+a named list containing heatmaps of the confusion matrices and relevant model evaluation metrics
 }
 \description{
-Random Forest Model
+This function builds and trains a Random Forest classifier for the provided features using the provided parameters.
 }
 \examples{
 RForest_Model(data="Obesity Dataset", features=c(TRUE,TRUE,TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE,
