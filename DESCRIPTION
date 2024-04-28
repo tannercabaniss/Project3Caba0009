@@ -17,6 +17,9 @@ Suggests:
     shinyjs,
     bslib,
     ggplot2,
-    reshape2
+    reshape2,
+    knitr,
+    rmarkdown
 Depends: 
     R (>= 2.10)
+VignetteBuilder: knitr

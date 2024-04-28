@@ -95,7 +95,9 @@ ui <- page_navbar(
       "Training Metrics:",
       tableOutput("train_metrics"),
       "Testing Metrics:",
-      tableOutput("test_metrics")
+      tableOutput("test_metrics"),
+      "Importance Values:",
+      tableOutput("Import_Vals")
     ),
     col_widths = c(2,4,6)
     )
@@ -244,6 +246,10 @@ server <- function(input, output, session) {
       model_results$Metrics_test
     }, rownames = TRUE)
 
+    output$Import_Vals <- renderTable({
+      model_results$Import_Vals
+    }, rownames = TRUE)
+
     # Update model_status
     model_status("Model finished.")
 
@@ -267,7 +273,6 @@ server <- function(input, output, session) {
       warning("Please select at least one feature for analysis.")
       session$reload()
     }
-
 
     scaling_inv <- input$dropdown_scaling_inv
     feat_anal_results <- Feat_Anal(featureList_inv, scaling_inv)

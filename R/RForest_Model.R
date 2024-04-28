@@ -209,9 +209,15 @@ RForest_Model <- function(data, features, scaling, parameters) {
   metrics_train_df <- conf_matrix_train$byClass[,c(1,2,3,4,5,6,7,11)]
   metrics_test_df <- conf_matrix_test$byClass[,c(1,2,3,4,5,6,7,11)]
 
+  # Feature Importance
+  importance_values <- randomForest::importance(rf_model)
+  colnames(importance_values) <- c("Insufficient_Weight", "Normal_Weight", "Overweight_LevelI", "Overweight_LevelII",
+                                   "Obesity_Type_I", "Obesity_Type_II", "Obesity_Type_III", "MeanDecreaseAccuracy",
+                                   "MeanDecreaseGini")
+
   # Write out results list
   results_list <- list("Train_hmap" = train_heatmap, "Test_hmap" = test_heatmap, "Metrics_train" = metrics_train_df,
-                       "Metrics_test" = metrics_test_df)
+                       "Metrics_test" = metrics_test_df, "Import_Vals" = importance_values)
 
   return (results_list)
 }
